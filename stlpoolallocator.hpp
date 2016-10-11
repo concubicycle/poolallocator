@@ -23,8 +23,7 @@ private:
 	static std::uint32_t next_id;
 	
 public:
-	std::uint8_t* mem;
-	//std::uint32_t size;
+	std::uint8_t* mem;	
 	std::uint32_t offset;	
 } pool_mem_block;
 
@@ -103,8 +102,7 @@ public:
 		m_mem_block_count = 1;
 
 		//init the memblock
-		m_mem_blocks[0].mem = (std::uint8_t*)aligned_address;
-		//m_mem_blocks[0].size = expanded_size_bytes - adjustment;
+		m_mem_blocks[0].mem = (std::uint8_t*)aligned_address;		
 		m_mem_blocks[0].offset = adjustment;
 
 		prepare_memory(m_mem_blocks[0].mem, m_capacity);
@@ -171,12 +169,10 @@ public:
 		m_mem_block_count++;
 		m_mem_blocks = (pool_mem_block*)realloc(m_mem_blocks, sizeof(pool_mem_block) * m_mem_block_count);
 
-		m_mem_blocks[m_mem_block_count - 1].mem = new_mem_block;
-		//m_mem_blocks[m_mem_block_count - 1].size = expanded_size - adjustment;
+		m_mem_blocks[m_mem_block_count - 1].mem = new_mem_block;		
 		m_mem_blocks[m_mem_block_count - 1].offset = adjustment;
 
-		std::uint8_t* last_mem_block = m_mem_blocks[m_mem_block_count - 2].mem;
-		//std::uint32_t lastm_mem_blocksize = m_mem_blocks[m_mem_block_count - 2].size;
+		std::uint8_t* last_mem_block = m_mem_blocks[m_mem_block_count - 2].mem;		
 
 		//link memory blocks
 		*((std::uint8_t**)m_head) = new_mem_block;
