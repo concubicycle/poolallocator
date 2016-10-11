@@ -7,9 +7,9 @@
 
 
 
-
-//#define ELPP_DISABLE_LOGS 1
-
+// comment out for logging
+#define ELPP_DISABLE_LOGS 1
+#define ELPP_DISABLE_INFO_LOGS 1
 
 #include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
@@ -37,13 +37,13 @@ typedef struct sample_data_structure
 
 int main()
 {
-	int allocations = 5;
+	int allocations = 100000;
 	int iterations = 1;
 
 	fflush(stdin);
 
 	pool_allocator<sample_data_structure> allocator;
-	allocator.init(1024);
+	
 
 	std::vector<sample_data_structure*> elements;
 

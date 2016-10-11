@@ -32,7 +32,7 @@ public:
 
 
 
-template<typename T>
+template<typename T, std::uint32_t size_bytes = 1024>
 class pool_allocator
 {
 private:
@@ -68,15 +68,7 @@ private:
 	}
 
 public:
-	pool_allocator()  {}
-
-	~pool_allocator() 
-	{
-		free_pool();
-	}
-
-
-	void init(std::uint32_t size_bytes)
+	pool_allocator()  
 	{
 		if (size_bytes == 0)
 			return;
@@ -97,12 +89,12 @@ public:
 
 		LOG(INFO) << "Initializing with size: " << size_bytes << std::endl;
 		LOG(INFO) << "m_capacity: " << m_capacity << std::endl;
-		LOG(INFO) << "expanded_size_bytes: "  << expanded_size_bytes << std::endl;
-		LOG(INFO) << "alignment: "  << alignof(T) << std::endl;		
-		LOG(INFO) << "misalignment: "  << misalignment << std::endl;
-		LOG(INFO) << "adjustment: "  << adjustment << std::endl;	
-		LOG(INFO) << "raw_address: "  << raw_address << std::endl;
-		LOG(INFO) << "aligned_address: "  << 	 aligned_address << std::endl;		
+		LOG(INFO) << "expanded_size_bytes: " << expanded_size_bytes << std::endl;
+		LOG(INFO) << "alignment: " << alignof(T) << std::endl;
+		LOG(INFO) << "misalignment: " << misalignment << std::endl;
+		LOG(INFO) << "adjustment: " << adjustment << std::endl;
+		LOG(INFO) << "raw_address: " << raw_address << std::endl;
+		LOG(INFO) << "aligned_address: " << aligned_address << std::endl;
 		LOG(INFO) << std::endl;
 
 
@@ -120,6 +112,13 @@ public:
 		m_size = 0;
 		return;
 	}
+
+	~pool_allocator() 
+	{
+		free_pool();
+	}
+
+
 
 	void linked_expand(std::uint32_t size_bytes)
 	{
