@@ -5,21 +5,14 @@
 #ifndef ___STLPOOLALLOCATOR_
 #define ___STLPOOLALLOCATOR_
 
-
 #include  <cstdint>
 #include <stdlib.h>
 #include <iostream>
 
 #include "easylogging++.h"
 
-
 #include <cstdio>
-
-
-#include <vector>
 #include <deque>
-
-
 
 
 
@@ -32,14 +25,12 @@ private:
 	public:
 		std::uint8_t* mem;
 		std::uint32_t offset;
-
-
+		
 		pool_mem_block(uint32_t block_size_bytes)
 		{
 			//Use non-alligned alloc to get memory
 			std::uint64_t raw_address = std::uint64_t(malloc(block_size_bytes));
-
-
+			
 			//Calculate adjustment by masking off the lower bits of the address,
 			//to determine how 'misaligned' it is.
 			std::uint64_t mask = (alignof(T)-1);
@@ -49,8 +40,7 @@ private:
 
 			mem = (std::uint8_t*)aligned_address;
 			offset = adjustment;
-
-
+			
 			LOG(INFO) << "-- Initializing block with size " << size_bytes << "--" << std::endl;			
 			LOG(INFO) << "block_size_bytes: " << block_size_bytes << std::endl;
 			LOG(INFO) << "alignment: " << alignof(T) << std::endl;
@@ -67,28 +57,25 @@ private:
 		{
 			// shouldn't be deleting the actual memory, even if we move this object. 
 		}
-
-
-		//copy
-		pool_mem_block(const pool_mem_block& other) :
+					
+		pool_mem_block(const pool_mem_block& other) : //copy
+			mem(other.mem), offset(other.offset)
+		{
+		}
+				
+		pool_mem_block(pool_mem_block&& other) noexcept : //move
 			mem(other.mem), offset(other.offset)
 		{
 		}
 
-		// move
-		pool_mem_block(pool_mem_block&& other) noexcept : 
-			mem(other.mem), offset(other.offset)
-		{
-		}
-
-		pool_mem_block& operator=(const pool_mem_block& other) // copy assignment
+		pool_mem_block& operator=(const pool_mem_block& other) // copy 
 		{
 			pool_mem_block tmp(other);  // re-use copy-constructor
 			*this = std::move(tmp);		// re-use move-assignment
 			return *this;
 		}
 
-		pool_mem_block& operator=(pool_mem_block&& other) // move assignment
+		pool_mem_block& operator=(pool_mem_block&& other) // move 
 		{
 			mem = other.mem;
 			offset = other.offset;		
@@ -104,8 +91,9 @@ private:
 			free((std::uint8_t*)(malloc_ret_address));
 		}
 	};
-
-
+	//
+	///// end mem_pool_block
+	
 
 	
 
@@ -145,7 +133,6 @@ public:
 			return;
 
 		m_size = 0;
-
 		
 		m_capacity = (size_bytes / sizeof(T)) - 1;
 		LOG(INFO) << "m_capacity: " << m_capacity << std::endl;
@@ -155,9 +142,7 @@ public:
 		
 		//allocate a pointer to the first memory block.
 		m_mem_blocks.emplace_back(pool_mem_block(expanded_size_bytes));	
-
-		prepare_memory(m_mem_blocks[0].mem, m_capacity);
-		
+		prepare_memory(m_mem_blocks[0].mem, m_capacity);		
 		m_head = m_mem_blocks.back().mem;		
 		
 		return;
@@ -176,8 +161,6 @@ public:
 		LOG(INFO) << "--Expanding with " << size_bytes << " bytes.--" << std::endl;
 		
 		std::uint32_t expanded_size = size_bytes + alignof(T);
-		
-
 		m_mem_blocks.emplace_back(pool_mem_block(expanded_size));	
 
 		std::uint32_t count = (size_bytes / sizeof(T)) - 1;
@@ -189,8 +172,8 @@ public:
 		*((std::uint8_t**)m_head) = m_mem_blocks.back().mem;
 
 		LOG(INFO) << "head is: " << (std::uint64_t) m_head << std::endl;
-		LOG(INFO)<<"m_size is: " << m_size << std::endl;
-		LOG(INFO)<<"m_capacity is: " << m_capacity << std::endl;
+		LOG(INFO) <<"m_size is: " << m_size << std::endl;
+		LOG(INFO) <<"m_capacity is: " << m_capacity << std::endl;
 
 		LOG(INFO)
 			<< std::endl
