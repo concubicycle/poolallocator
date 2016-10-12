@@ -12,7 +12,7 @@
 #include "easylogging++.h"
 
 #include <cstdio>
-#include <deque>
+#include <vector>
 
 
 
@@ -100,7 +100,7 @@ private:
 	std::uint32_t m_size;
 	std::uint32_t m_capacity;
 		
-	std::deque<pool_mem_block> m_mem_blocks;
+	std::vector<pool_mem_block> m_mem_blocks;
 	std::uint16_t	m_mem_block_count;
 
 	std::uint8_t* m_head;
@@ -133,6 +133,8 @@ public:
 			return;
 
 		m_size = 0;
+
+		m_mem_blocks.reserve(128);
 		
 		m_capacity = (size_bytes / sizeof(T)) - 1;
 		LOG(INFO) << "m_capacity: " << m_capacity << std::endl;

@@ -1,10 +1,6 @@
 
 #include <cstdio>
-
-#include <stdio.h>
-
 #include <vector>
-
 
 
 // comment out for logging
@@ -15,12 +11,9 @@
 INITIALIZE_EASYLOGGINGPP
 
 
-#include "stlpoolallocator.hpp"
+#include "poolallocator.hpp"
 #include <ctime>
 #include <chrono>
-
-
-
 
 
 
@@ -35,10 +28,32 @@ typedef struct sample_data_structure
 
 
 
+void configure_logging()
+{
+	el::Configurations defaultConf;
+	defaultConf.setToDefault();
+	
+	// Values are always std::string
+	defaultConf.set(el::Level::Info,
+		el::ConfigurationType::Format, "%datetime %level %msg");
+
+	// default logger uses default configurations
+	el::Loggers::reconfigureLogger("default", defaultConf);
+	el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
+	el::Loggers::removeFlag(el::LoggingFlag::NewLineForContainer);
+	el::Loggers::reconfigureAllLoggers(el::ConfigurationType::Format, "%msg");
+}
+
+
+
 int main()
 {
-	int allocations = 100000;
-	int iterations = 1;
+	configure_logging();
+
+
+
+	int allocations = 1000000;
+	int iterations = 10;
 
 	fflush(stdin);
 
@@ -53,7 +68,7 @@ int main()
 	{
 		for(int i = 0; i < allocations; i++)
 		{
-			LOG(INFO) << i << std::endl; 
+			LOG(INFO) << i;
 			elements.push_back(allocator.allocate());
 		}
 
@@ -61,13 +76,12 @@ int main()
 		for(int i = 0; i < allocations; i++)
 		{
 			LOG(INFO) << (uint64_t)elements[i] << std::endl;
-		}
-		LOG(INFO) << std::endl;
+		}		
 
 
 		for(int i = 0; i < allocations; i++)
 		{
-			LOG(INFO) << i << std::endl; 
+			LOG(INFO) << i;
 			allocator.deallocate(elements[i]);
 		}
 
@@ -77,12 +91,12 @@ int main()
 
 		for(int i = 0; i < allocations; i++)
 		{
-			LOG(INFO) << i << std::endl; 
+			LOG(INFO) << i;
 			elements.push_back(allocator.allocate());
 		}
 		for(int i = 0; i < allocations; i++)
 		{
-			LOG(INFO) << i << std::endl; 
+			LOG(INFO) << i;
 			allocator.deallocate(elements[i]);
 		}
 	}
