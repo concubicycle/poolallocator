@@ -1,4 +1,3 @@
-
 #include <cstdio>
 #include <vector>
 
@@ -12,8 +11,13 @@ INITIALIZE_EASYLOGGINGPP
 
 
 #include "poolallocator.hpp"
+#include "free_list_allocator.hpp"
+
 #include <ctime>
 #include <chrono>
+
+
+using namespace memory_management;
 
 
 
@@ -52,13 +56,16 @@ int main()
 
 
 
+
 	int allocations = 1000000;
 	int iterations = 10;
 
 	fflush(stdin);
 
 	pool_allocator<sample_data_structure> allocator;
-	
+
+
+
 
 	std::vector<sample_data_structure*> elements;
 
